@@ -1,0 +1,6 @@
+{
+  "name": "Ludhiana Hair Studio",
+  "description": "Premium hair health products, expert doctor consultations, and advanced hair transplant services in Ludhiana.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
