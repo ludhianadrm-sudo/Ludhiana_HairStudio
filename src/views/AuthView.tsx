@@ -5,10 +5,6 @@ import { Sparkles, Phone, ArrowRight, ShieldCheck, CheckCircle2, RotateCw, Arrow
 
 const COUNTRY_CODES = [
   { code: '+91', country: 'India', flag: '🇮🇳' },
-  { code: '+1', country: 'US / Canada', flag: '🇺🇸' },
-  { code: '+44', country: 'UK', flag: '🇬🇧' },
-  { code: '+971', country: 'UAE', flag: '🇦🇪' },
-  { code: '+65', country: 'Singapore', flag: '🇸🇬' },
 ];
 
 export const AuthView: React.FC = () => {
@@ -56,10 +52,15 @@ export const AuthView: React.FC = () => {
     if (e) e.preventDefault();
     setMobileError('');
 
-    // Basic length validation
+    // Exact 10 digit length & Indian mobile prefix validation
     const cleaned = mobileNumber.replace(/\D/g, '');
-    if (!cleaned || cleaned.length < 10) {
-      setMobileError('Please enter a valid 10-digit mobile number.');
+    if (cleaned.length !== 10) {
+      setMobileError('Please enter a valid 10-digit Indian mobile number.');
+      return;
+    }
+
+    if (!/^[6-9]\d{9}$/.test(cleaned)) {
+      setMobileError('Indian mobile numbers must start with 6, 7, 8, or 9.');
       return;
     }
 
@@ -301,33 +302,22 @@ export const AuthView: React.FC = () => {
                     Mobile Number
                   </label>
                   <div className="flex gap-2">
-                    {/* Country Code Dropdown */}
-                    <div className="relative shrink-0">
-                      <select
-                        value={countryCode}
-                        onChange={(e) => setCountryCode(e.target.value)}
-                        className="appearance-none h-14 bg-gray-950 border border-white/15 focus:border-emerald-500 rounded-2xl px-3.5 pr-8 text-sm font-bold text-white cursor-pointer outline-none transition-colors"
-                      >
-                        {COUNTRY_CODES.map((c) => (
-                          <option key={c.code} value={c.code} className="bg-gray-900 text-white">
-                            {c.flag} {c.code}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
-                        ▼
-                      </div>
+                    {/* Fixed Indian Country Badge */}
+                    <div className="shrink-0 h-14 bg-gray-950 border border-white/15 rounded-2xl px-3.5 flex items-center gap-1.5 text-sm font-bold text-white select-none">
+                      <span className="text-base">🇮🇳</span>
+                      <span>+91</span>
                     </div>
 
                     {/* Phone Input Box */}
                     <div className="relative flex-1">
                       <input
                         type="tel"
-                        maxLength={11}
-                        placeholder="98100 12345"
+                        maxLength={10}
+                        placeholder="10-digit number (e.g. 9810012345)"
                         value={mobileNumber}
                         onChange={(e) => {
-                          setMobileNumber(e.target.value.replace(/\D/g, ''));
+                          const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                          setMobileNumber(val);
                           setMobileError('');
                         }}
                         className={`w-full h-14 bg-gray-950 border ${
@@ -337,9 +327,14 @@ export const AuthView: React.FC = () => {
                       />
                     </div>
                   </div>
-                  {mobileError && (
+                  {mobileError ? (
                     <p className="text-xs text-red-400 font-medium pt-1 flex items-center gap-1">
                       <span>⚠️</span> {mobileError}
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-gray-400 font-medium pt-0.5 flex items-center justify-between">
+                      <span>Only Indian (+91) mobile numbers allowed</span>
+                      <span className="font-mono text-emerald-400">{mobileNumber.length}/10</span>
                     </p>
                   )}
                 </div>
